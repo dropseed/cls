@@ -74,6 +74,8 @@ jobs:
         with:
           name: cls_ffi.dll
           path: artifacts/cls_ffi.dll
-      - run: |
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
           gh release create ${{ github.ref }}
           gh release upload --clobber artifacts/*
