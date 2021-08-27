@@ -16,7 +16,7 @@ else:
 lib = cdll.LoadLibrary(
     os.path.join(
         os.path.dirname(os.path.dirname(__file__)),
-        "target/release/libcls_ffi." + extension,
+        "target", "release", f"libcls_ffi.{extension}"
     )
 )
 
