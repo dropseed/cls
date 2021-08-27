@@ -81,5 +81,5 @@ jobs:
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create ${{ github.ref }}
+          gh release create ${GITHUB_REF##*/}
           gh release upload --clobber artifacts/*
