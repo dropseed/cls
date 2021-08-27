@@ -30,6 +30,6 @@ jobs:
             components: rustfmt
       - run: |
           cargo build --release
-          python3 ffi_examples/python.py
+          python3 ffi_examples\python.py
           ls target\release
     
