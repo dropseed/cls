@@ -1,0 +1,3 @@
+#!/bin/sh -e
+cargo build --release
+python3 ffi_examples/python.py

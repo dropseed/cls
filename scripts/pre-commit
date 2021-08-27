@@ -1,0 +1,3 @@
+#!/bin/sh -e
+rustfmt src/* --check
+./scripts/test
