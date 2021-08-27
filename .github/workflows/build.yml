@@ -69,17 +69,17 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: libcls_ffi.so
-          path: artifacts/libcls_ffi.so
+          path: artifacts
       - uses: actions/download-artifact@v2
         with:
           name: libcls_ffi.dylib
-          path: artifacts/libcls_ffi.dylib
+          path: artifacts
       - uses: actions/download-artifact@v2
         with:
           name: cls_ffi.dll
-          path: artifacts/cls_ffi.dll
+          path: artifacts
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create ${GITHUB_REF##*/}
-          gh release upload ${GITHUB_REF##*/} artifacts/libcls_ffi.so artifacts/libcls_ffi.dylib artifacts/cls_ffi.dll
+          gh release upload ${GITHUB_REF##*/} artifacts/*
