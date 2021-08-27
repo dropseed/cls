@@ -3,17 +3,20 @@ import json
 import platform
 from ctypes import cdll
 
+
+print(platform.uname())
+
 if platform.uname()[0] == "Windows":
-    extension = "dll"
-if platform.uname()[0] == "Linux":
-    extension = "so"
+    filename = "cls_ffi.dll"
+elif platform.uname()[0] == "Linux":
+    filename = "libcls_ffi.so"
 else:
-    extension = "dylib"
+    filename = "libcls_ffi.dylib"
 
 lib = cdll.LoadLibrary(
     os.path.join(
         os.path.dirname(os.path.dirname(__file__)),
-        "target/release/libcls_ffi." + extension,
+        "target", "release", filename
     )
 )
 
