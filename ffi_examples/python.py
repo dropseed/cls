@@ -4,11 +4,11 @@ import platform
 from ctypes import cdll
 
 
-print(platform.uname()[0])
+print(platform.uname())
 
 if platform.uname()[0] == "Windows":
     extension = "dll"
-if platform.uname()[0] == "Linux":
+elif platform.uname()[0] == "Linux":
     extension = "so"
 else:
     extension = "dylib"
