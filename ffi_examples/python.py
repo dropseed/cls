@@ -4,7 +4,7 @@ import platform
 from ctypes import cdll
 
 
-print(platform.uname())
+print(platform.uname()[0])
 
 if platform.uname()[0] == "Windows":
     extension = "dll"
