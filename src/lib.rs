@@ -183,15 +183,26 @@ pub extern "C" fn set_debug(debug: u32) {
 }
 
 #[no_mangle]
-pub extern "C" fn set_noninteractive_tracking(enabled: u32, is_noninteractive: u32) {
-    let enabled = parse_ffi_bool(enabled);
+pub extern "C" fn set_is_noninteractive(is_noninteractive: u32) {
     let is_noninteractive = parse_ffi_bool(is_noninteractive);
     unsafe {
-        SETTINGS.noninteractive_tracking_enabled = enabled;
-        SETTINGS.is_noninteractive = is_noninteractive;
+        SETTINGS.set_is_noninteractive(is_noninteractive);
         debug_print(format!(
-            "set_noninteractive_tracking enabled={:?} is_noninteractive={:?}",
-            SETTINGS.noninteractive_tracking_enabled, SETTINGS.is_noninteractive
+            "set_is_noninteractive is_noninteractive={:?}",
+            SETTINGS.get_is_noninteractive(),
+        ));
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn set_noninteractive_tracking_enabled(enabled: u32) {
+    let enabled = parse_ffi_bool(enabled);
+    unsafe {
+        SETTINGS.noninteractive_tracking_enabled = enabled;
+
+        debug_print(format!(
+            "set_noninteractive_tracking_enabled enabled={:?}",
+            SETTINGS.noninteractive_tracking_enabled,
         ));
     }
 }

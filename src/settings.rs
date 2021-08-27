@@ -24,8 +24,8 @@ Can we collect anonymous usage data from your installation?
 pub struct Settings {
     pub project_slug: String,
     pub request_permission_prompt: String,
-    pub is_noninteractive: bool,
     pub noninteractive_tracking_enabled: bool,
+    _is_noninteractive: Option<bool>,
     _project_key: String,
     _debug: bool,
     _user_id: String,
@@ -52,8 +52,8 @@ impl Settings {
         Settings {
             project_slug: String::from(""),
             request_permission_prompt: String::from(DEFAULT_REQUEST_PROMPT),
-            is_noninteractive: false,
             noninteractive_tracking_enabled: false,
+            _is_noninteractive: None, // defaults to CI env var unless explicitly set
             _project_key: String::from(""),
             _debug: false,
             _user_id: String::from(""),
@@ -118,6 +118,27 @@ impl Settings {
         Uuid::new_v4().to_string()
     }
 
+    pub fn set_is_noninteractive(&mut self, is_noninteractive: bool) {
+        self._is_noninteractive = Some(is_noninteractive);
+    }
+
+    pub fn get_is_noninteractive(&self) -> bool {
+        if self._is_noninteractive.is_some() {
+            return self._is_noninteractive.unwrap();
+        }
+
+        let env_val = get_env_setting("NONINTERACTIVE").unwrap_or("".to_string());
+        if env_val.len() > 0 {
+            return env_val != "false" && env_val != "0";
+        }
+
+        if env::var("CI").is_ok() {
+            return true;
+        }
+
+        return false;
+    }
+
     fn get_config_dir(&self) -> path::PathBuf {
         let mut settings_path = dirs::config_dir().unwrap();
         settings_path.push(format!("{}_cls", self.project_slug));
@@ -171,7 +192,7 @@ impl Settings {
             );
         }
 
-        if self.is_noninteractive {
+        if self.get_is_noninteractive() {
             return Ok(self.noninteractive_tracking_enabled);
         }
 
