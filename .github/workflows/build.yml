@@ -1,0 +1,82 @@
+on: [push]
+
+name: build
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2  # for example testing
+      - uses: actions-rs/toolchain@v1
+        with:
+            toolchain: stable
+            components: rustfmt
+      - run: ./scripts/pre-commit
+      - run: ls target/release
+      - uses: actions/upload-artifact@v2
+        with:
+          name: libcls_ffi.so
+          path: target/release/libcls_ffi.so
+          if-no-files-found: error
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2  # for example testing
+      - uses: actions-rs/toolchain@v1
+        with:
+            toolchain: stable
+            components: rustfmt
+      - run: ./scripts/pre-commit
+      - run: ls target/release
+      - uses: actions/upload-artifact@v2
+        with:
+          name: libcls_ffi.dylib
+          path: target/release/libcls_ffi.dylib
+          if-no-files-found: error
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2  # for example testing
+      - uses: actions-rs/toolchain@v1
+        with:
+            toolchain: stable
+            components: rustfmt
+      - run: |
+          cargo build --release
+          python3 ffi_examples\python.py
+          ls target\release
+      - uses: actions/upload-artifact@v2
+        with:
+          name: cls_ffi.dll
+          path: target\release\cls_ffi.dll
+          if-no-files-found: error
+
+  create-release:
+    needs: [linux, macos, windows]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - run: actions/checkout@v2
+      - run: mkdir artifacts
+      - uses: actions/download-artifact@v2
+        with:
+          name: libcls_ffi.so
+          path: artifacts/libcls_ffi.so
+      - uses: actions/download-artifact@v2
+        with:
+          name: libcls_ffi.dylib
+          path: artifacts/libcls_ffi.dylib
+      - uses: actions/download-artifact@v2
+        with:
+          name: cls_ffi.dll
+          path: artifacts/cls_ffi.dll
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create ${{ github.ref }}
+          gh release upload --clobber artifacts/*
