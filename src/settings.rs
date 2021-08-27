@@ -185,7 +185,7 @@ impl Settings {
         let user_settings = self.get_user_settings();
 
         if user_settings.get("user_id").is_none() {
-            println!("No user id found in settings.json");
+            super::debug_print("No user_id found, generating a new unique one".to_string());
             self.set_user_setting(
                 "user_id",
                 &serde_json::to_value(&self.get_user_id()).unwrap(),
