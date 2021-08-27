@@ -1,0 +1,5 @@
+#!/bin/sh -e
+tag="v$1"
+cargo build --release
+cp target/release/libcls_ffi.dylib target/release/libcls_ffi_arm64.dylib
+gh release upload $tag target/release/libcls_ffi_arm64.dylib
