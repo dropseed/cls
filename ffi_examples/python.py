@@ -3,6 +3,9 @@ import json
 import platform
 from ctypes import cdll
 
+
+print(platform.uname())
+
 if platform.uname()[0] == "Windows":
     extension = "dll"
 if platform.uname()[0] == "Linux":

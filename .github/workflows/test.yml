@@ -3,21 +3,21 @@ on: [push]
 name: test
 
 jobs:
-  test:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2  # for example testing
-      - uses: actions-rs/toolchain@v1
-        with:
-            toolchain: stable
-            components: rustfmt
-      - run: ./scripts/pre-commit
-      - run: ls target/release
+  # test:
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       os: [ubuntu-latest, macos-latest]
+  #   runs-on: ${{ matrix.os }}
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-python@v2  # for example testing
+  #     - uses: actions-rs/toolchain@v1
+  #       with:
+  #           toolchain: stable
+  #           components: rustfmt
+  #     - run: ./scripts/pre-commit
+  #     - run: ls target/release
 
   test-windows:
     runs-on: windows-latest
@@ -29,7 +29,6 @@ jobs:
             toolchain: stable
             components: rustfmt
       - run: |
-          cargo build --release
+          # cargo build --release
           python3 ffi_examples\python.py
           ls target\release
-    
