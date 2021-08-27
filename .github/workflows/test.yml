@@ -12,3 +12,4 @@ jobs:
             toolchain: stable
             components: rustfmt
       - run: ./scripts/pre-commit
+      - run: ls targets/release
