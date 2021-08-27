@@ -82,4 +82,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create ${GITHUB_REF##*/}
-          gh release upload ${GITHUB_REF##*/} --clobber artifacts/*
+          gh release upload ${GITHUB_REF##*/} artifacts/libcls_ffi.so artifacts/libcls_ffi.dylib artifacts/cls_ffi.dll
