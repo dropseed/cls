@@ -137,7 +137,7 @@ impl Settings {
             return true;
         }
 
-        if atty::is(Stream::Stdin) {
+        if !atty::is(Stream::Stdin) {
             return true;
         }
 
