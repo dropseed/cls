@@ -7,16 +7,16 @@ from ctypes import cdll
 print(platform.uname())
 
 if platform.uname()[0] == "Windows":
-    extension = "dll"
+    filename = "cls_ffi.dll"
 elif platform.uname()[0] == "Linux":
-    extension = "so"
+    filename = "libcls_ffi.so"
 else:
-    extension = "dylib"
+    filename = "libcls_ffi.dylib"
 
 lib = cdll.LoadLibrary(
     os.path.join(
         os.path.dirname(os.path.dirname(__file__)),
-        "target", "release", f"libcls_ffi.{extension}"
+        "target", "release", filename
     )
 )
 
