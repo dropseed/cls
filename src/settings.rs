@@ -1,3 +1,4 @@
+use atty::Stream;
 use dialoguer::Confirm;
 use dirs;
 use std::env;
@@ -133,6 +134,10 @@ impl Settings {
         }
 
         if env::var("CI").is_ok() {
+            return true;
+        }
+
+        if atty::is(Stream::Stdin) {
             return true;
         }
 

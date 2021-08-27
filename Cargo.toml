@@ -21,3 +21,4 @@ dirs = "3.0.2"
 dialoguer = "0.8.0"
 uuid = { version = "0.8", features = ["serde", "v4"] }
 serde = { version = "1.0", features = ["derive"] }
+atty = "0.2"
