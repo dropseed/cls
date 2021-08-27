@@ -15,6 +15,7 @@ lib = cdll.LoadLibrary(os.path.join(os.path.dirname(os.path.dirname(__file__)), 
 lib.set_debug(1)
 lib.set_project_key("_foo_".encode("utf-8"))
 lib.set_project_slug("_slug_".encode("utf-8"))
+lib.set_noninteractive_tracking(1, 1)
 lib.track_event(
     "_slug_".encode("utf-8"),
     "command".encode("utf-8"),
@@ -23,6 +24,5 @@ lib.track_event(
 )
 lib.dispatch_events()
 lib.set_request_permission_prompt("_prompt_".encode("utf-8"))
-lib.set_noninteractive_tracking(1, 1)
 lib.set_user_id("_user_id_".encode("utf-8"))
 lib.set_invocation_id("_invocation_id_".encode("utf-8"))
