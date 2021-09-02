@@ -157,6 +157,20 @@ pub extern "C" fn set_project_slug(slug: *const c_char) {
 }
 
 #[no_mangle]
+pub extern "C" fn set_instance_id(id: *const c_char) {
+    if id.is_null() {
+        // Silently return
+        return;
+    }
+
+    let id = parse_ffi_str(id);
+    unsafe {
+        SETTINGS.instance_id = id;
+        debug_print(format!("set_instance_id id={:?}", SETTINGS.instance_id))
+    }
+}
+
+#[no_mangle]
 pub extern "C" fn set_request_permission_prompt(text: *const c_char) {
     if text.is_null() {
         // Silently return

@@ -23,6 +23,7 @@ lib = cdll.LoadLibrary(
 lib.set_debug(1)
 lib.set_project_key("_foo_".encode("utf-8"))
 lib.set_project_slug("_slug_".encode("utf-8"))
+lib.set_instance_id("_instanceid_".encode("utf-8"))
 lib.set_noninteractive_tracking_enabled(1)
 lib.track_event(
     "_slug_".encode("utf-8"),

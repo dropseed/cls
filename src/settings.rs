@@ -24,6 +24,7 @@ Can we collect anonymous usage data from your installation?
 #[derive(Debug)]
 pub struct Settings {
     pub project_slug: String,
+    pub instance_id: String, // Identifies an exact instance of CLS (could have a package using CLS installed multiple times on the same machine)
     pub request_permission_prompt: String,
     pub noninteractive_tracking_enabled: bool,
     _is_noninteractive: Option<bool>,
@@ -52,6 +53,7 @@ impl Settings {
     pub fn new() -> Settings {
         Settings {
             project_slug: String::from(""),
+            instance_id: String::from(""),
             request_permission_prompt: String::from(DEFAULT_REQUEST_PROMPT),
             noninteractive_tracking_enabled: false,
             _is_noninteractive: None, // defaults to CI env var unless explicitly set
@@ -144,14 +146,27 @@ impl Settings {
         return false;
     }
 
+    // Returns a <slug>_cls_<instance_id> string
+    fn get_instance_dirname(&self) -> String {
+        let mut dirname = String::from("");
+        if self.project_slug.len() > 0 {
+            dirname = dirname + &self.project_slug + "_";
+        }
+        dirname = dirname + "cls";
+        if self.instance_id.len() > 0 {
+            dirname = dirname + "_" + &self.instance_id;
+        }
+        dirname
+    }
+
     fn get_config_dir(&self) -> path::PathBuf {
         let mut settings_path = dirs::config_dir().unwrap();
-        settings_path.push(format!("{}_cls", self.project_slug));
+        settings_path.push(self.get_instance_dirname());
         settings_path
     }
     pub fn get_cache_dir(&self) -> path::PathBuf {
         let mut cache_dir = dirs::cache_dir().unwrap();
-        cache_dir.push(format!("{}_cls", self.project_slug));
+        cache_dir.push(self.get_instance_dirname());
         cache_dir
     }
 
@@ -222,5 +237,26 @@ impl Settings {
             &serde_json::to_value(tracking_enabled).unwrap(),
         );
         return Ok(tracking_enabled);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn instance_dirnames() {
+        let mut settings = Settings::new();
+
+        assert_eq!(settings.get_instance_dirname(), "cls");
+
+        settings.project_slug = "example".to_string();
+        assert_eq!(settings.get_instance_dirname(), "example_cls");
+
+        settings.instance_id = "hash".to_string();
+        assert_eq!(settings.get_instance_dirname(), "example_cls_hash");
+
+        settings.project_slug = "".to_string();
+        assert_eq!(settings.get_instance_dirname(), "cls_hash");
     }
 }
