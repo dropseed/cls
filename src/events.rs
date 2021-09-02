@@ -8,6 +8,7 @@ use std::path;
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Event {
     pub slug: String,
+    #[serde(alias = "type", rename(serialize = "type"))]
     pub type_s: String,
     pub metadata: serde_json::Value,
     pub user_id: String,
@@ -80,5 +81,49 @@ impl EventLog {
 
     pub fn clear(&self) {
         fs::remove_file(&self.path).unwrap();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn deserialize_standard() {
+        serde_json::from_str::<Event>(
+            r#"{
+                "slug": "test",
+                "type": "test",
+                "metadata": {},
+                "user_id": "test",
+                "invocation_id": "test",
+                "datetime": "test"
+            }"#,
+        )
+        .unwrap();
+    }
+    #[test]
+    fn deserialize_old() {
+        serde_json::from_str::<Event>(
+            r#"{
+                "slug": "test",
+                "type_s": "test",
+                "metadata": {},
+                "user_id": "test",
+                "invocation_id": "test",
+                "datetime": "test"
+            }"#,
+        )
+        .unwrap();
+    }
+    #[test]
+    fn serialize() {
+        let mut event = Event::new("test", "test", serde_json::Value::Null, "test", "test");
+        event.datetime = "test".to_string();
+        let json = serde_json::to_string(&event).unwrap();
+        assert_eq!(
+            json,
+            r#"{"slug":"test","type":"test","metadata":null,"user_id":"test","invocation_id":"test","datetime":"test"}"#
+        );
     }
 }

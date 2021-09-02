@@ -72,7 +72,7 @@ pub extern "C" fn track_event(
     let user_id = unsafe { SETTINGS.get_user_id() };
     let event = Event::new(&slug, &type_s, metadata, &user_id, &invocation_id);
 
-    let should_track = match unsafe { SETTINGS.should_track_event(&event.metadata) } {
+    let should_track = match unsafe { SETTINGS.should_track_event(&event) } {
         Ok(val) => val,
         Err(_) => false,
     };

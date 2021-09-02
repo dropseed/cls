@@ -72,14 +72,7 @@ impl APIClient {
         Ok(())
     }
     pub fn post_event(&self, event: &Event) -> Result<(), ReqwestError> {
-        let json = serde_json::json!({
-            "slug": event.slug,
-            "type": event.type_s,
-            "metadata": event.metadata,
-            "datetime": event.datetime,
-            "user_id": event.user_id,
-            "invocation_id": event.invocation_id,
-        });
+        let json = serde_json::to_value(event).unwrap();
         self.post("events/", &json)
     }
 }

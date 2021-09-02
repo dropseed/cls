@@ -1,3 +1,4 @@
+use super::events;
 use atty::Stream;
 use dialoguer::Confirm;
 use dirs;
@@ -198,10 +199,7 @@ impl Settings {
         serde_json::to_writer_pretty(&mut settings_file, &settings).unwrap();
     }
 
-    pub fn should_track_event(
-        &self,
-        event_data: &serde_json::Value,
-    ) -> Result<bool, Box<dyn Error>> {
+    pub fn should_track_event(&self, event: &events::Event) -> Result<bool, Box<dyn Error>> {
         let user_settings = self.get_user_settings();
 
         if user_settings.get("user_id").is_none() {
@@ -224,7 +222,7 @@ impl Settings {
         let prompt = self.request_permission_prompt.trim();
         let prompt = prompt.replace(
             "{event_data}",
-            &serde_json::to_string_pretty(event_data).unwrap(),
+            &serde_json::to_string_pretty(event).unwrap(),
         );
         let prompt = prompt.replace(
             "{settings_path}",
