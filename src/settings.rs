@@ -28,6 +28,7 @@ pub struct Settings {
     pub instance_id: String, // Identifies an exact instance of CLS (could have a package using CLS installed multiple times on the same machine)
     pub request_permission_prompt: String,
     pub noninteractive_tracking_enabled: bool,
+    pub version: String,
     _is_noninteractive: Option<bool>,
     _project_key: String,
     _debug: bool,
@@ -57,6 +58,7 @@ impl Settings {
             instance_id: String::from(""),
             request_permission_prompt: String::from(DEFAULT_REQUEST_PROMPT),
             noninteractive_tracking_enabled: false,
+            version: String::from(""),
             _is_noninteractive: None, // defaults to CI env var unless explicitly set
             _project_key: String::from(""),
             _debug: false,

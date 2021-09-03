@@ -70,7 +70,8 @@ pub extern "C" fn track_event(
 
     let invocation_id = unsafe { SETTINGS.get_invocation_id() };
     let user_id = unsafe { SETTINGS.get_user_id() };
-    let event = Event::new(&slug, &type_s, metadata, &user_id, &invocation_id);
+    let version = unsafe { SETTINGS.version.as_str() };
+    let event = Event::new(&slug, &type_s, metadata, &user_id, &invocation_id, &version);
 
     let should_track = match unsafe { SETTINGS.should_track_event(&event) } {
         Ok(val) => val,
@@ -139,6 +140,21 @@ pub extern "C" fn set_project_key(key: *const c_char) {
             "set_project_key key={:?}",
             SETTINGS.get_project_key()
         ));
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn set_version(key: *const c_char) {
+    if key.is_null() {
+        // Silently return
+        return;
+    }
+
+    let key = parse_ffi_str(key);
+
+    unsafe {
+        SETTINGS.version = key;
+        debug_print(format!("set_version key={:?}", SETTINGS.version));
     }
 }
 
