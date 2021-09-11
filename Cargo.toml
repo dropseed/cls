@@ -23,4 +23,4 @@ uuid = { version = "0.8", features = ["serde", "v4"] }
 serde = { version = "1.0", features = ["derive"] }
 atty = "0.2"
 # Have to vendor openssl to cross-compile right now (linux aarch64)
-openssl = { version = '0.10', features = ["vendored"] }
+# openssl = { version = '0.10', features = ["vendored"] }
