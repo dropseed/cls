@@ -24,11 +24,10 @@ jobs:
           if-no-files-found: error
       # aarch64
       - run: |
-          sudo apt-get install gcc-aarch64-linux-gnu
-          rustup target add aarch64-unknown-linux-gnu
+          cargo install cross
           rm -r target
-          cargo build --release --target aarch64-unknown-linux-gnu
-          ls target/release
+          cross build --release --target aarch64-unknown-linux-gnu
+          ls target/release -alh
       - uses: actions/upload-artifact@v2
         with:
           name: libcls_ffi_aarch64.so
