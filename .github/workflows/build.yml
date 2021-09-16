@@ -81,9 +81,9 @@ jobs:
         run: curl https://raw.githubusercontent.com/dropseed/commitstat/master/install.sh | bash -s -- -b $HOME/bin
       - name: Run commitstat
         run: |
-          stat -f %z artifacts/libcls_ffi.so    | $HOME/bin/commitstat - --name libcls_ffi.so
-          stat -f %z artifacts/libcls_ffi.dylib | $HOME/bin/commitstat - --name libcls_ffi.dylib
-          stat -f %z artifacts/cls_ffi.dll      | $HOME/bin/commitstat - --name cls_ffi.dll
+          stat --format %s artifacts/libcls_ffi.so    | $HOME/bin/commitstat - --name libcls_ffi.so
+          stat --format %s artifacts/libcls_ffi.dylib | $HOME/bin/commitstat - --name libcls_ffi.dylib
+          stat --format %s artifacts/cls_ffi.dll      | $HOME/bin/commitstat - --name cls_ffi.dll
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
@@ -91,4 +91,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload ${GITHUB_REF##*/} artifacts/*
+          gh release upload ${GITHUB_REF##*/} artifacts/* --repo $GITHUB_REPOSITORY
