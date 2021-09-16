@@ -13,6 +13,9 @@ elif platform.uname()[0] == "Linux":
 else:
     filename = "libcls_ffi.dylib"
 
+# To clear settings
+# rm -r /Users/davegaeddert/Library/Application\ Support/_slug__cls__instanceid_/
+
 lib = cdll.LoadLibrary(
     os.path.join(
         os.path.dirname(os.path.dirname(__file__)),

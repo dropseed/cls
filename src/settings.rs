@@ -1,4 +1,6 @@
 use super::events;
+use atty::Stream;
+use ctrlc;
 use dialoguer::Confirm;
 use dirs;
 use std::env;
@@ -211,6 +213,11 @@ impl Settings {
             return Ok(already_enabled.unwrap().as_bool().unwrap());
         }
 
+        if !atty::is(Stream::Stdin) {
+            // Don't prompt if we don't have stdin, and don't save
+            return Ok(false);
+        }
+
         let prompt = self.request_permission_prompt.trim();
         let prompt = prompt.replace(
             "{event_data}",
@@ -220,6 +227,13 @@ impl Settings {
             "{settings_path}",
             &self.get_user_settings_path().to_str().unwrap(),
         );
+
+        ctrlc::set_handler(move || {
+            // Put the cursor back if ctrl c
+            let term = dialoguer::console::Term::stdout();
+            term.show_cursor().unwrap();
+        })?;
+
         let tracking_enabled = Confirm::new().with_prompt(prompt).interact()?;
 
         self.set_user_setting(
