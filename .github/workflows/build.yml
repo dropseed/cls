@@ -13,7 +13,6 @@ jobs:
             toolchain: stable
             components: rustfmt
       - uses: Swatinem/rust-cache@v1
-      # x86_64
       - run: |
           ./scripts/pre-commit
           ls target/release
@@ -22,7 +21,17 @@ jobs:
           name: libs
           path: target/release/libcls_ffi.so
           if-no-files-found: error
-      # aarch64
+
+  linux-aarch64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2  # for example testing
+      - uses: actions-rs/toolchain@v1
+        with:
+            toolchain: stable
+            components: rustfmt
+      - uses: Swatinem/rust-cache@v1
       - run: |
           cargo install cross
           rm -r target
@@ -35,6 +44,7 @@ jobs:
           name: libs
           path: target/aarch64-unknown-linux-gnu/release/libcls_ffi_aarch64.so
           if-no-files-found: error
+
   macos:
     runs-on: macos-latest
     steps:
@@ -75,7 +85,7 @@ jobs:
           if-no-files-found: error
 
   upload-artifacts:
-    needs: [linux, macos, windows]
+    needs: [linux, linux-aarch64, macos, windows]
     runs-on: ubuntu-latest
     steps:
       - run: mkdir artifacts
@@ -83,7 +93,7 @@ jobs:
         with:
           name: libs
           path: artifacts
-          
+
       - name: Install commitstat
         run: curl https://raw.githubusercontent.com/dropseed/commitstat/master/install.sh | bash -s -- -b $HOME/bin
       - name: Run commitstat
@@ -94,7 +104,7 @@ jobs:
           stat --format %s artifacts/cls_ffi.dll              | $HOME/bin/commitstat - --name cls_ffi.dll
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - if: startsWith(github.ref, 'refs/tags/v')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
