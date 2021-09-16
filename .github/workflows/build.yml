@@ -28,12 +28,12 @@ jobs:
           rm -r target
           cross build --release --target aarch64-unknown-linux-gnu
           ls target/release -alh
+          ls target -alh
       - uses: actions/upload-artifact@v2
         with:
           name: libcls_ffi_aarch64.so
           path: target/release/libcls_ffi.so
           if-no-files-found: error
-
   macos:
     runs-on: macos-latest
     steps:
