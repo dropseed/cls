@@ -71,7 +71,16 @@ pub extern "C" fn track_event(
     let invocation_id = unsafe { SETTINGS.get_invocation_id() };
     let user_id = unsafe { SETTINGS.get_user_id() };
     let version = unsafe { SETTINGS.version.as_str() };
-    let event = Event::new(&slug, &type_s, metadata, &user_id, &invocation_id, &version);
+    let ci = unsafe { SETTINGS.get_is_ci() };
+    let event = Event::new(
+        &slug,
+        &type_s,
+        metadata,
+        &user_id,
+        &invocation_id,
+        &ci,
+        &version,
+    );
 
     let should_track = match unsafe { SETTINGS.should_track_event(&event) } {
         Ok(val) => val,
@@ -212,27 +221,36 @@ pub extern "C" fn set_debug(debug: u32) {
     }
 }
 
+// Deprecated: alias for set_is_ci
 #[no_mangle]
 pub extern "C" fn set_is_noninteractive(is_noninteractive: u32) {
-    let is_noninteractive = parse_ffi_bool(is_noninteractive);
-    unsafe {
-        SETTINGS.set_is_noninteractive(is_noninteractive);
-        debug_print(format!(
-            "set_is_noninteractive is_noninteractive={:?}",
-            SETTINGS.get_is_noninteractive(),
-        ));
-    }
+    set_is_ci(is_noninteractive)
 }
 
 #[no_mangle]
+pub extern "C" fn set_is_ci(is_ci: u32) {
+    let is_ci = parse_ffi_bool(is_ci);
+    unsafe {
+        SETTINGS.set_is_ci(is_ci);
+        debug_print(format!("set_is_ci is_ci={:?}", SETTINGS.get_is_ci(),));
+    }
+}
+
+// Deprecated: alias for set_ci_tracking_enabled
+#[no_mangle]
 pub extern "C" fn set_noninteractive_tracking_enabled(enabled: u32) {
+    set_ci_tracking_enabled(enabled)
+}
+
+#[no_mangle]
+pub extern "C" fn set_ci_tracking_enabled(enabled: u32) {
     let enabled = parse_ffi_bool(enabled);
     unsafe {
-        SETTINGS.noninteractive_tracking_enabled = enabled;
+        SETTINGS.ci_tracking_enabled = enabled;
 
         debug_print(format!(
-            "set_noninteractive_tracking_enabled enabled={:?}",
-            SETTINGS.noninteractive_tracking_enabled,
+            "set_ci_tracking_enabled enabled={:?}",
+            SETTINGS.ci_tracking_enabled,
         ));
     }
 }

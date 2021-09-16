@@ -1,5 +1,4 @@
 use super::events;
-use atty::Stream;
 use dialoguer::Confirm;
 use dirs;
 use std::env;
@@ -27,9 +26,9 @@ pub struct Settings {
     pub project_slug: String,
     pub instance_id: String, // Identifies an exact instance of CLS (could have a package using CLS installed multiple times on the same machine)
     pub request_permission_prompt: String,
-    pub noninteractive_tracking_enabled: bool,
+    pub ci_tracking_enabled: bool,
     pub version: String,
-    _is_noninteractive: Option<bool>,
+    _is_ci: Option<bool>,
     _project_key: String,
     _debug: bool,
     _user_id: String,
@@ -57,9 +56,9 @@ impl Settings {
             project_slug: String::from(""),
             instance_id: String::from(""),
             request_permission_prompt: String::from(DEFAULT_REQUEST_PROMPT),
-            noninteractive_tracking_enabled: false,
+            ci_tracking_enabled: false,
             version: String::from(""),
-            _is_noninteractive: None, // defaults to CI env var unless explicitly set
+            _is_ci: None, // defaults to CI env var unless explicitly set
             _project_key: String::from(""),
             _debug: false,
             _user_id: String::from(""),
@@ -124,25 +123,16 @@ impl Settings {
         Uuid::new_v4().to_string()
     }
 
-    pub fn set_is_noninteractive(&mut self, is_noninteractive: bool) {
-        self._is_noninteractive = Some(is_noninteractive);
+    pub fn set_is_ci(&mut self, is_ci: bool) {
+        self._is_ci = Some(is_ci);
     }
 
-    pub fn get_is_noninteractive(&self) -> bool {
-        if self._is_noninteractive.is_some() {
-            return self._is_noninteractive.unwrap();
-        }
-
-        let env_val = get_env_setting("NONINTERACTIVE").unwrap_or("".to_string());
-        if env_val.len() > 0 {
-            return env_val != "false" && env_val != "0";
+    pub fn get_is_ci(&self) -> bool {
+        if self._is_ci.is_some() {
+            return self._is_ci.unwrap();
         }
 
         if env::var("CI").is_ok() {
-            return true;
-        }
-
-        if !atty::is(Stream::Stdin) {
             return true;
         }
 
@@ -212,8 +202,8 @@ impl Settings {
             );
         }
 
-        if self.get_is_noninteractive() {
-            return Ok(self.noninteractive_tracking_enabled);
+        if self.get_is_ci() {
+            return Ok(self.ci_tracking_enabled);
         }
 
         let already_enabled = user_settings.get("tracking_enabled");

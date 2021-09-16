@@ -25,7 +25,8 @@ lib.set_version("1.0.0".encode("utf-8"))
 lib.set_project_key("_foo_".encode("utf-8"))
 lib.set_project_slug("_slug_".encode("utf-8"))
 lib.set_instance_id("_instanceid_".encode("utf-8"))
-lib.set_noninteractive_tracking_enabled(1)
+lib.set_noninteractive_tracking_enabled(1)  # deprecated
+lib.set_ci_tracking_enabled(1)
 lib.track_event(
     "_slug_".encode("utf-8"),
     "command".encode("utf-8"),
@@ -37,5 +38,8 @@ lib.set_request_permission_prompt("_prompt_".encode("utf-8"))
 lib.set_user_id("_user_id_".encode("utf-8"))
 lib.set_invocation_id("_invocation_id_".encode("utf-8"))
 lib.set_is_noninteractive(
+    0
+)  # deprecated
+lib.set_is_ci(
     0
 )  # do this last so we use defaults when tracking event but make sure call works

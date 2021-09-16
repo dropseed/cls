@@ -7,12 +7,15 @@ use std::path;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Event {
+    // Maps directly to the API fields
     pub slug: String,
     #[serde(alias = "type", rename(serialize = "type"))]
     pub type_s: String,
     pub metadata: serde_json::Value,
     pub user_id: String,
     pub invocation_id: String,
+    #[serde(default)]
+    pub ci: bool,
     pub datetime: String,
     #[serde(default)]
     pub version: String,
@@ -25,6 +28,7 @@ impl Event {
         metadata: serde_json::Value,
         user_id: &str,
         invocation_id: &str,
+        ci: &bool,
         version: &str,
     ) -> Event {
         Event {
@@ -32,6 +36,7 @@ impl Event {
             type_s: type_s.to_string(),
             user_id: user_id.to_string(),
             invocation_id: invocation_id.to_string(),
+            ci: ci.clone(),
             metadata: metadata,
             datetime: format!("{}", UTC::now()),
             version: version.to_string(),
@@ -101,6 +106,7 @@ mod tests {
                 "metadata": {},
                 "user_id": "test",
                 "invocation_id": "test",
+                "ci": false,
                 "datetime": "test",
                 "version": "1.0.0"
             }"#,
@@ -109,7 +115,7 @@ mod tests {
     }
     #[test]
     fn deserialize_old() {
-        serde_json::from_str::<Event>(
+        let event = serde_json::from_str::<Event>(
             r#"{
                 "slug": "test",
                 "type_s": "test",
@@ -120,6 +126,7 @@ mod tests {
             }"#,
         )
         .unwrap();
+        assert_eq!(event.ci, false);
     }
     #[test]
     fn serialize() {
@@ -129,13 +136,14 @@ mod tests {
             serde_json::Value::Null,
             "test",
             "test",
+            &false,
             "1.0.0",
         );
         event.datetime = "test".to_string();
         let json = serde_json::to_string(&event).unwrap();
         assert_eq!(
             json,
-            r#"{"slug":"test","type":"test","metadata":null,"user_id":"test","invocation_id":"test","datetime":"test","version":"1.0.0"}"#
+            r#"{"slug":"test","type":"test","metadata":null,"user_id":"test","invocation_id":"test","ci":false,"datetime":"test","version":"1.0.0"}"#
         );
     }
 }
