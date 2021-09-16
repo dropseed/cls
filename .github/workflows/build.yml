@@ -20,13 +20,6 @@ jobs:
           name: libcls_ffi.so
           path: target/release/libcls_ffi.so
           if-no-files-found: error
-      
-      - name: Install commitstat
-        run: curl https://raw.githubusercontent.com/dropseed/commitstat/master/install.sh | bash -s -- -b $HOME/bin
-      - name: Run commitstat
-        run: stat -f %z target/release/libcls_ffi.so | $HOME/bin/commitstat - --name libcls_ffi.so
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   macos:
     runs-on: macos-latest
@@ -45,13 +38,6 @@ jobs:
           name: libcls_ffi.dylib
           path: target/release/libcls_ffi.dylib
           if-no-files-found: error
-          
-      - name: Install commitstat
-        run: curl https://raw.githubusercontent.com/dropseed/commitstat/master/install.sh | bash -s -- -b $HOME/bin
-      - name: Run commitstat
-        run: stat -f %z target/release/libcls_ffi.dylib | $HOME/bin/commitstat - --name libcls_ffi.dylib
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   windows:
     runs-on: windows-latest
@@ -72,13 +58,6 @@ jobs:
           name: cls_ffi.dll
           path: target\release\cls_ffi.dll
           if-no-files-found: error
-          
-      - name: Install commitstat
-        run: curl https://raw.githubusercontent.com/dropseed/commitstat/master/install.sh | bash -s -- -b $HOME/bin
-      - name: Run commitstat
-        run: stat -f %z target/release/cls_ffi.dll | $HOME/bin/commitstat - --name cls_ffi.dll
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   create-release:
     needs: [linux, macos, windows]
