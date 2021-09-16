@@ -59,12 +59,10 @@ jobs:
           path: target\release\cls_ffi.dll
           if-no-files-found: error
 
-  create-release:
+  upload-artifacts:
     needs: [linux, macos, windows]
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
     steps:
-      - uses: actions/checkout@v2
       - run: mkdir artifacts
       - uses: actions/download-artifact@v2
         with:
@@ -78,7 +76,19 @@ jobs:
         with:
           name: cls_ffi.dll
           path: artifacts
-      - env:
+          
+      - name: Install commitstat
+        run: curl https://raw.githubusercontent.com/dropseed/commitstat/master/install.sh | bash -s -- -b $HOME/bin
+      - name: Run commitstat
+        run: |
+          stat --format %s artifacts/libcls_ffi.so    | $HOME/bin/commitstat - --name libcls_ffi.so
+          stat --format %s artifacts/libcls_ffi.dylib | $HOME/bin/commitstat - --name libcls_ffi.dylib
+          stat --format %s artifacts/cls_ffi.dll      | $HOME/bin/commitstat - --name cls_ffi.dll
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - if: startsWith(github.ref, 'refs/tags/v')
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload ${GITHUB_REF##*/} artifacts/*
+          gh release upload ${GITHUB_REF##*/} artifacts/* --repo $GITHUB_REPOSITORY
