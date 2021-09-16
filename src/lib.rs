@@ -221,12 +221,6 @@ pub extern "C" fn set_debug(debug: u32) {
     }
 }
 
-// Deprecated: alias for set_is_ci
-#[no_mangle]
-pub extern "C" fn set_is_noninteractive(is_noninteractive: u32) {
-    set_is_ci(is_noninteractive)
-}
-
 #[no_mangle]
 pub extern "C" fn set_is_ci(is_ci: u32) {
     let is_ci = parse_ffi_bool(is_ci);
@@ -234,12 +228,6 @@ pub extern "C" fn set_is_ci(is_ci: u32) {
         SETTINGS.set_is_ci(is_ci);
         debug_print(format!("set_is_ci is_ci={:?}", SETTINGS.get_is_ci(),));
     }
-}
-
-// Deprecated: alias for set_ci_tracking_enabled
-#[no_mangle]
-pub extern "C" fn set_noninteractive_tracking_enabled(enabled: u32) {
-    set_ci_tracking_enabled(enabled)
 }
 
 #[no_mangle]
