@@ -19,7 +19,7 @@ jobs:
           ls target/release
       - uses: actions/upload-artifact@v2
         with:
-          name: libcls_ffi.so
+          name: libs
           path: target/release/libcls_ffi.so
           if-no-files-found: error
       # aarch64
@@ -29,10 +29,11 @@ jobs:
           cross build --release --target aarch64-unknown-linux-gnu
           ls target/release -alh
           ls target/aarch64-unknown-linux-gnu/release -alh
+          cp target/aarch64-unknown-linux-gnu/release/libcls_ffi.so target/aarch64-unknown-linux-gnu/release/libcls_ffi_aarch64.so
       - uses: actions/upload-artifact@v2
         with:
-          name: libcls_ffi_aarch64.so
-          path: target/aarch64-unknown-linux-gnu/release/libcls_ffi.so
+          name: libs
+          path: target/aarch64-unknown-linux-gnu/release/libcls_ffi_aarch64.so
           if-no-files-found: error
   macos:
     runs-on: macos-latest
@@ -49,7 +50,7 @@ jobs:
           ls target/release
       - uses: actions/upload-artifact@v2
         with:
-          name: libcls_ffi.dylib
+          name: libs
           path: target/release/libcls_ffi.dylib
           if-no-files-found: error
 
@@ -69,7 +70,7 @@ jobs:
           ls target\release
       - uses: actions/upload-artifact@v2
         with:
-          name: cls_ffi.dll
+          name: libs
           path: target\release\cls_ffi.dll
           if-no-files-found: error
 
@@ -80,19 +81,7 @@ jobs:
       - run: mkdir artifacts
       - uses: actions/download-artifact@v2
         with:
-          name: libcls_ffi.so
-          path: artifacts
-      - uses: actions/download-artifact@v2
-        with:
-          name: libcls_ffi_aarch64.so
-          path: artifacts
-      - uses: actions/download-artifact@v2
-        with:
-          name: libcls_ffi.dylib
-          path: artifacts
-      - uses: actions/download-artifact@v2
-        with:
-          name: cls_ffi.dll
+          name: libs
           path: artifacts
           
       - name: Install commitstat
