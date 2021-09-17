@@ -1,5 +1,6 @@
 use super::events;
 use atty::Stream;
+use colored::*;
 use ctrlc;
 use dialoguer::Confirm;
 use dirs;
@@ -23,11 +24,21 @@ Your settings will be saved here and can be changed at any time:
 Can we collect anonymous usage data from your installation?
 "#;
 
+const DEFAULT_ERROR_PROMPT: &str = r#"
+Uh oh, there was an error! Reporting these issues back to us helps improve our tools.
+
+Here's the data we would collect:
+{event_data}
+
+Do you want to anonymously report this?
+"#;
+
 #[derive(Debug)]
 pub struct Settings {
     pub project_slug: String,
     pub instance_id: String, // Identifies an exact instance of CLS (could have a package using CLS installed multiple times on the same machine)
     pub request_permission_prompt: String,
+    pub error_prompt: String,
     pub ci_tracking_enabled: bool,
     pub version: String,
     _is_ci: Option<bool>,
@@ -58,6 +69,7 @@ impl Settings {
             project_slug: String::from(""),
             instance_id: String::from(""),
             request_permission_prompt: String::from(DEFAULT_REQUEST_PROMPT),
+            error_prompt: String::from(DEFAULT_ERROR_PROMPT),
             ci_tracking_enabled: false,
             version: String::from(""),
             _is_ci: None, // defaults to CI env var unless explicitly set
@@ -208,6 +220,10 @@ impl Settings {
             return Ok(self.ci_tracking_enabled);
         }
 
+        if event.type_s == "error" {
+            return self.should_track_error(event);
+        }
+
         let already_enabled = user_settings.get("tracking_enabled");
         if !already_enabled.is_none() {
             return Ok(already_enabled.unwrap().as_bool().unwrap());
@@ -241,6 +257,31 @@ impl Settings {
             &serde_json::to_value(tracking_enabled).unwrap(),
         );
         return Ok(tracking_enabled);
+    }
+
+    fn should_track_error(&self, event: &events::Event) -> Result<bool, Box<dyn Error>> {
+        if !atty::is(Stream::Stdin) {
+            // Don't prompt if we don't have stdin, and don't save
+            return Ok(false);
+        }
+
+        let prompt = self.error_prompt.trim();
+        let prompt = prompt
+            .replace(
+                "{event_data}",
+                &serde_json::to_string_pretty(event).unwrap(),
+            )
+            .yellow()
+            .to_string();
+
+        ctrlc::set_handler(move || {
+            // Put the cursor back if ctrl c
+            let term = dialoguer::console::Term::stdout();
+            term.show_cursor().unwrap();
+        })?;
+
+        let track_error = Confirm::new().with_prompt(prompt).interact()?;
+        return Ok(track_error);
     }
 }
 

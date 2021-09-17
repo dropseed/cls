@@ -213,6 +213,20 @@ pub extern "C" fn set_request_permission_prompt(text: *const c_char) {
 }
 
 #[no_mangle]
+pub extern "C" fn set_error_prompt(text: *const c_char) {
+    if text.is_null() {
+        // Silently return
+        return;
+    }
+
+    let text = parse_ffi_str(text);
+    unsafe {
+        SETTINGS.error_prompt = text;
+        debug_print(format!("set_error_prompt text={:?}", SETTINGS.error_prompt))
+    }
+}
+
+#[no_mangle]
 pub extern "C" fn set_debug(debug: u32) {
     let debug = parse_ffi_bool(debug);
     unsafe {

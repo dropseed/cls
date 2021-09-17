@@ -42,3 +42,10 @@ lib.set_invocation_id("_invocation_id_".encode("utf-8"))
 lib.set_is_ci(
     0
 )  # do this last so we use defaults when tracking event but make sure call works
+
+lib.track_event(
+    "_slug_".encode("utf-8"),
+    "error".encode("utf-8"),
+    json.dumps({"version": "1.0", "stacktrace":"A\nLong\nThing\n"}).encode("utf-8"),
+    0,
+)
