@@ -1,6 +1,6 @@
 [package]
 name = "cls"
-version = "0.4.2"
+version = "0.5.0"
 edition = "2018"
 
 # binary could be the cls command line tool?
