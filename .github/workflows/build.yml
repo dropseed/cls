@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     container: ubuntu:16.04  # intentionally older to support older GLIBC version
     steps:
-      - run: apt-get install curl
+      - run: apt-get update && apt-get install curl
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2  # for example testing
       - uses: actions-rs/toolchain@v1
