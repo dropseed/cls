@@ -4,7 +4,8 @@ name: build
 
 jobs:
   linux:
-    runs-on: ubuntu-16.04  # intentionally older to support older GLIBC version
+    runs-on: ubuntu-latest
+    container: ubuntu:16.04  # intentionally older to support older GLIBC version
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2  # for example testing
